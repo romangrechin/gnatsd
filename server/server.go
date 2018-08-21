@@ -109,6 +109,8 @@ type Server struct {
 	// not set any timeout.
 	monitoringServer *http.Server
 	profilingServer  *http.Server
+
+	disconnectHandler func(cid uint64)
 }
 
 // Make sure all are 64bits for atomic use
@@ -310,6 +312,10 @@ func (s *Server) Start() {
 	// Pprof http endpoint for the profiler.
 	if opts.ProfPort != 0 {
 		s.StartProfiler()
+	}
+
+	if opts.CustomDisconnectHandler != nil {
+		s.disconnectHandler = opts.CustomDisconnectHandler
 	}
 
 	// Wait for clients.
@@ -933,6 +939,10 @@ func (s *Server) removeClient(c *client) {
 		updateProtoInfoCount = true
 	}
 	c.mu.Unlock()
+
+	if s.disconnectHandler != nil {
+		s.disconnectHandler(c.cid)
+	}
 
 	s.mu.Lock()
 	switch typ {

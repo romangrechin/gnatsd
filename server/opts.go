@@ -87,8 +87,9 @@ type Options struct {
 	TLSConfig       *tls.Config   `json:"-"`
 	WriteDeadline   time.Duration `json:"-"`
 
-	CustomClientAuthentication Authentication `json:"-"`
-	CustomRouterAuthentication Authentication `json:"-"`
+	CustomClientAuthentication Authentication   `json:"-"`
+	CustomRouterAuthentication Authentication   `json:"-"`
+	CustomDisconnectHandler    func(cid uint64) `json:"-"`
 }
 
 // Clone performs a deep copy of the Options struct, returning a new clone
